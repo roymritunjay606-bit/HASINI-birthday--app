@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Happy Birthday {{ friend_name }}! 🎉</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<div id="confetti-canvas"></div>
+
+<nav class="topnav">
+  <a href="#home">Home</a>
+  <a href="#letter">Letter</a>
+  <a href="#moments">Moments</a>
+  <a href="#celebrate">Celebrate</a>
+</nav>
+
+<main class="wrapper">
+
+  <section id="home" class="hero">
+    <div class="balloons">🎈🎈🎈</div>
+    <h1 class="title">Happy Birthday,<br><span>{{ friend_name }}!</span></h1>
+    <p class="subtitle">Wishing you the happiest, sweetest, most cake-filled day 🎂✨</p>
+
+    {% if countdown.is_today %}
+      <div class="today-badge">🎉 IT'S TODAY! 🎉</div>
+    {% else %}
+      <div class="countdown-box">
+        <span class="countdown-number">{{ countdown.days_left }}</span>
+        <span class="countdown-label">day{{ 's' if countdown.days_left != 1 else '' }} to go!</span>
+      </div>
+    {% endif %}
+  </section>
+
+  <section id="letter" class="card letter-card">
+    <h2>A Letter For You 💌</h2>
+    <p class="hint">Click the envelope to open it</p>
+
+    <div class="envelope" id="envelope">
+      <div class="envelope-flap"></div>
+      <div class="envelope-body">✉️</div>
+    </div>
+
+    <div class="letter-paper" id="letterPaper">
+      <pre>{{ letter_text }}</pre>
+    </div>
+  </section>
+
+  <section id="moments" class="card moments-card">
+    <h2>Our Sweet Moments 📸</h2>
+    <p class="hint">Tap a card to flip it and read the memory</p>
+
+    <div class="moments-grid">
+      {% for m in moments %}
+        <div class="flip-card">
+          <div class="flip-card-inner">
+            <div class="flip-card-front">
+              <span class="moment-emoji">{{ m.emoji }}</span>
+              <p>{{ m.title }}</p>
+            </div>
+            <div class="flip-card-back">
+              <p>{{ m.caption }}</p>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </section>
+
+  <section id="celebrate" class="card guestbook-card">
+    <h2>Birthday Wishes 📝</h2>
+    <form action="{{ url_for('sign_guestbook') }}" method="POST" class="guestbook-form">
+      <input type="text" name="author" placeholder="Your name" maxlength="50" required>
+      <textarea name="message" placeholder="Leave a birthday wish..." maxlength="300" required></textarea>
+      <button type="submit">Send Wish 🎁</button>
+    </form>
+
+    <div class="messages">
+      {% for msg in messages %}
+        <div class="message-bubble">
+          <p class="msg-text">{{ msg.message }}</p>
+          <p class="msg-meta">— {{ msg.author }} · {{ msg.created_at }}</p>
+        </div>
+      {% else %}
+        <p class="no-messages">Be the first to leave a wish! 🎂</p>
+      {% endfor %}
+    </div>
+  </section>
+
+</main>
+
+<script src="{{ url_for('static', filename='script.js') }}"></script>
+<script>
+  const IS_TODAY = {{ countdown.is_today | tojson }};
+</script>
+</body>
+</html>
